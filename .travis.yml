@@ -11,7 +11,13 @@ jobs:
     - stage: build and publish
       language: java
       jdk: oraclejdk8
+      addons:
+        mariadb: '10.2'
       install: skip
+      before_script:
+        - mysql -uroot < databases/address-book/CREATE_DATABASE.sql
+        - curl https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/5.1.1/flyway-commandline-5.1.1-linux-x64.tar.gz | tar xvz
+        - flyway-*/flyway -url="jdbc:mysql://localhost:3306/ADDRESS_BOOK_TEST" -locations=filesystem:databases/address-book -user=address-book -password= clean migrate
       script: ./gradlew clean build
       before_deploy:
         - git config --local user.name "Travis CI"
@@ -23,12 +29,22 @@ jobs:
         file: "build/libs/address-book.jar"
         skip_cleanup: true
     - stage: deploy to review
-      language: bash
+      language: java
+      before_install:
+        - wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+        - echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+        - sudo apt-get update
+        - sudo apt-get install cf-cli
+        - sudo apt-get -y install jq
+        - curl https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/5.1.1/flyway-commandline-5.1.1-linux-x64.tar.gz | tar xvz
       script:
         - echo "Downloading $RELEASE_TAG"
         - wget -P build/libs https://github.com/$GITHUB_USERNAME/address-book/releases/download/$RELEASE_TAG/address-book.jar
       before_deploy:
         - echo "Deploying $RELEASE_TAG to review"
+      before_script:
+        - cf login -a $CF_API_URL -u $CF_USERNAME -p $CF_PASSWORD -o $CF_ORG -s review
+        - scripts/migrate-databases.sh address-book
       deploy:
         provider: cloudfoundry
         api: $CF_API_URL
