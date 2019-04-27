@@ -2,6 +2,7 @@
 applications:
   - name: address-book
     path: build/libs/address-book.jar
-    random-route: true
+    routes:
+      - route: address-book-ptc.cfapps.io
     env:
-      WELCOME_MESSAGE: Hello from Cloud Foundry
+      WELCOME_MESSAGE: Hello from the review environment
