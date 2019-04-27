@@ -1,0 +1,7 @@
+---
+applications:
+  - name: address-book
+    path: build/libs/address-book.jar
+    random-route: true
+    env:
+      WELCOME_MESSAGE: Hello from Cloud Foundry
