@@ -33,7 +33,7 @@ public class JdbcAccommodationRepositoryTest {
 
     @Test
     public void create_whenSelectFromRepository_returnsCreatedEntityOptional() {
-        Accommodation newAccommodation = new Accommodation(123, 321, LocalDate.parse("2018-01-01"), true);
+        Accommodation newAccommodation = new Accommodation(123L, 321L, LocalDate.parse("2018-01-01"), true);
         Accommodation entry = subject.create(newAccommodation).get();
 
 
@@ -105,7 +105,7 @@ public class JdbcAccommodationRepositoryTest {
                 "INSERT INTO ACCOMMODATION (ID, ADDRESS_ID, PERSON_ID, ACCOMMODATION_DATE, SINGLE_OWNED) " +
                         "VALUES (100500, 123, 321, '2018-01-01', true)");
 
-        Accommodation accommodationToUpdate = new Accommodation(456, 654, LocalDate.parse("2018-10-10"), false);
+        Accommodation accommodationToUpdate = new Accommodation(456L, 654L, LocalDate.parse("2018-10-10"), false);
 
 
         Accommodation updatedAccommodation = subject.update(100500L, accommodationToUpdate).get();
@@ -124,7 +124,7 @@ public class JdbcAccommodationRepositoryTest {
                 "INSERT INTO ACCOMMODATION (ID, ADDRESS_ID, PERSON_ID, ACCOMMODATION_DATE, SINGLE_OWNED) " +
                         "VALUES (100500, 123, 321, '2018-01-01', true)");
 
-        Accommodation accommodationToUpdate = new Accommodation(456, 654, LocalDate.parse("2018-10-10"), false);
+        Accommodation accommodationToUpdate = new Accommodation(456L, 654L, LocalDate.parse("2018-10-10"), false);
 
         Accommodation updatedAccommodation = subject.update(100500L, accommodationToUpdate).get();
 

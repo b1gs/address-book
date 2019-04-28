@@ -3,6 +3,7 @@ package com.epam.addressbook;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,6 @@ import java.util.Optional;
 @RestController
 public class AccommodationController {
 
-    private ObjectMapper mapper = new ObjectMapper();
     private AccommodationRepository repository;
 
     public AccommodationController(AccommodationRepository repository) {
@@ -39,7 +39,7 @@ public class AccommodationController {
     }
 
     @PostMapping("accommodations")
-    public ResponseEntity<Accommodation> create(Accommodation accommodation) {
+    public ResponseEntity<Accommodation> create(@RequestBody Accommodation accommodation) {
         repository.create(accommodation);
         return new ResponseEntity(HttpStatus.CREATED);
     }

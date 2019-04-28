@@ -1,6 +1,11 @@
+import org.flywaydb.gradle.task.FlywayCleanTask
+import org.flywaydb.gradle.task.FlywayInfoTask
+import org.flywaydb.gradle.task.FlywayMigrateTask
+
 plugins {
     id "java"
     id "org.springframework.boot" version "2.1.1.RELEASE"
+    id "org.flywaydb.flyway" version "5.2.4"
 }
 
 repositories {
@@ -14,13 +19,51 @@ ext {
 dependencies {
     compile ("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     testCompile("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+
+    compile("org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion")
+//    compile "org.flywaydb:flyway-core:5.2.4"
+    compile("mysql:mysql-connector-java:8.0.11")
 }
 
-
+def devDbUrl = "jdbc:mysql://localhost:3306/ADDRESS_BOOK_DEV?user=address-book&password=password&useSSL=false&allowPublicKeyRetrieval=true&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false"
 bootRun.environment([
         "WELCOME_MESSAGE": "hello",
+        "SPRING_DATASOURCE_URL": devDbUrl
 ])
 
+def testDbUrl = "jdbc:mysql://localhost:3306/ADDRESS_BOOK_TEST?user=address_book&password=password&useSSL=false&allowPublicKeyRetrieval=true&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false"
 test.environment([
         "WELCOME_MESSAGE": "Hello from test",
+        "SPRING_DATASOURCE_URL": testDbUrl
 ])
+
+flyway {
+    url = devDbUrl
+    user = "root"
+    password = "root@123"
+    locations = ["filesystem:databases/address-book"]
+}
+
+task testClean(type: FlywayCleanTask) {
+    url = testDbUrl
+}
+
+task testInfo(type: FlywayInfoTask) {
+    url = testDbUrl
+}
+
+task testMigrate(type: FlywayMigrateTask) {
+    url = testDbUrl
+}
+
+task devClean(type: FlywayCleanTask) {
+    url = devDbUrl
+}
+
+task devInfo(type: FlywayInfoTask) {
+    url = devDbUrl
+}
+
+task devMigrate(type: FlywayMigrateTask) {
+    url = devDbUrl
+}
